@@ -58,7 +58,7 @@ function login() {
                 // 로컬 스토리지에 현재 상태를 저장 시킴 key - user , value - object 
                 localStorage.setItem('user', JSON.stringify(userList[i]));
                 alert('로그인 완료');
-                // location.href = "board-list.html";
+                location.href = "board-list.html";
                 return; 
             }
         }
