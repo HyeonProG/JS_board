@@ -45,3 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+// 로그인 상태가 아니면 지정된 페이지로 리다이렉션
+function redirectToPageIfNotLoggedIn(page) {
+  // 로컬 스토리지 접근 - user key 값 여부 확인 
+  const loggedInUser = localStorage.getItem('user');
+  if(loggedInUser === null) {
+      location.href = `${page}.html`;
+  }
+}

@@ -62,3 +62,7 @@
     display: flex;
     justify-content: flex-end;
 }
+
+.num {
+    padding: 4px;
+}
