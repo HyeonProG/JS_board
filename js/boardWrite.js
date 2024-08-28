@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const username = document.querySelector(".username");
     const fileInput = document.querySelector(".file");
     const imgViewBox = document.querySelector(".img-box");
+    const content = document.querySelector(".content");
     const button = document.querySelector("button");
-    const today = new Date();
+    const day = new Date();
 
     // 사용자가 선택한 이미지를 저장할 공간이 필요
     let imageData = null;
@@ -50,9 +51,53 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 글 저장하는 기능 만들기
+    function saveBoard() {
+        // 유효성 검사
+        if (title.value === "") {
+            alert("제목을 입력해 주세요.");
+            return;
+        }
+
+        if (content.value === "") {
+            alert("내용을 입력해 주세요.");
+            return;
+        }
+
+        // 로컬 스토리지에 게시글 전체 목록 가져오기
+        let boardList = JSON.parse(localStorage.getItem("boardList") || '[]');
+
+        // 고유 id 생성
+        const newId = generateUniqueId(boardList);
+
+        // 객체 리터럴 표기법 사용
+        const board = {
+            id : newId,
+            title : title.value,
+            content : content.value,
+            username : username.value,
+            today : `${day.getFullYear()}.${day.getMonth() + 1}.${day.getDate()}`,
+            count : 0,
+            imgData : imageData
+        };
+
+        // 배열에다 생성한 객체 추가
+        boardList.push(board);
+
+        // 로컬 스토리지에 저장(배열 전체)
+        localStorage.setItem("boardList", JSON.stringify(boardList));
+
+        // 페이지 이동 처리
+        location.href = "board-list.html";
+
+    }
+
+    // 고유 id 생성 함수
+    function generateUniqueId(boardList) {
+        return boardList.length > 0 ? boardList[boardList.length - 1].id + 1 : 1;
+    }
 
     // 이벤트 리스너 등록 처리 - file change
     fileInput.addEventListener("change", fileUpload);
-
+    button.addEventListener("click", saveBoard);
 });
 

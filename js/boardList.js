@@ -6,7 +6,7 @@ const sampleBoardList = [
     content: "첫번째 게시글의 내용 입니다.",
     username: "홍길동",
     today: "2024.08.25",
-    count: "5",
+    count: 5,
   },
   {
     id: 2,
@@ -14,7 +14,7 @@ const sampleBoardList = [
     content: "두번째 게시글의 내용 입니다.",
     username: "이몽룡",
     today: "2024.08.25",
-    count: "2",
+    count: 2,
   },
   {
     id: 3,
@@ -22,7 +22,7 @@ const sampleBoardList = [
     content: "세번째 게시글의 내용 입니다.",
     username: "성춘향",
     today: "2024.08.25",
-    count: "50",
+    count: 50,
   },
   {
     id: 4,
@@ -30,7 +30,7 @@ const sampleBoardList = [
     content: "네번째 게시글의 내용 입니다.",
     username: "변학도",
     today: "2024.08.25",
-    count: "999",
+    count: 999,
   },
   {
     id: 5,
@@ -38,7 +38,7 @@ const sampleBoardList = [
     content: "다섯번째 게시글의 내용 입니다.",
     username: "심청",
     today: "2024.08.25",
-    count: "5000",
+    count: 5000,
   },
 ];
 
@@ -84,6 +84,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       boardContainer.innerHTML = postElements; // 게시글 컨테이너에 HTML 추가
 
+      // 동적으로 생성된 row들 전체를 함수로 전달
+      const postElementsCollection = document.querySelectorAll(".board");
+      postClickListeners(postElementsCollection);
+
       // 페이지네이션 생성하기
       createPagination(storedBoardList, page);
     } else {
@@ -113,22 +117,66 @@ document.addEventListener("DOMContentLoaded", function () {
     pageNumbers[currentPage].style.fontWeight = 600;
 
     pageNumbers.forEach((pageNumber) => {
-        pageNumber.addEventListener("click", (event) => {
-            // console.log("event", event);
-            // console.log("event.target", event.target);
-            // console.log("event.target.dataset.page", event.target.dataset.page);
-            
-            // 해당하는 번호를 가지고와서 다시 렌더링 해야 한다.
-            const targetPageNumber = parseInt(event.target.dataset.page); // 문자열 --> number 로 변환
-            loadPosts(targetPageNumber);
-        });
+      pageNumber.addEventListener("click", (event) => {
+        // console.log("event", event);
+        // console.log("event.target", event.target);
+        // console.log("event.target.dataset.page", event.target.dataset.page);
+
+        // 해당하는 번호를 가지고와서 다시 렌더링 해야 한다.
+        const targetPageNumber = parseInt(event.target.dataset.page); // 문자열 --> number 로 변환
+        loadPosts(targetPageNumber);
+      });
     });
-
-    // 글쓰기 버튼을 눌렀을 경우 -> 글쓰기 페이지 이동 처리
-    writeButton.onclick = function () {
-        location.href = "board-write.html";
-    }
-    // 해당 row 게시글을 눌렀을 경우 -> 상세보기 화면 이동 처리
-
   }
+
+  // 하나의 게시글 클릭 시 상세보기 화면 이동 처리
+  function postClickListeners(postElements) {
+    for (let i = 0; i < postElements.length; i++) {
+      postElements[i].onclick = async function () {
+        const postId = postElements[i].getAttribute("data-id");
+        await increaseViewCount(storedBoardList, postId);
+        // 상세보기 화면
+        location.href = `board-detail.html?id=${postId}`;
+      };
+    }
+  }
+
+  // 조회수 증가 로직 만들어 보기 -- 1단계
+  // function increaseViewCount(boardList, postId) {
+  //   for(let i = 0; i < boardList.length; i++) {
+  //     if (boardList[i].id === parseInt(postId)) {
+  //       boardList[i].count += 1;
+  //       break;
+  //     }
+  //   }
+
+  //   // 스파게티 코드 발생 유발할 수 있음
+  //   localStorage.setItem("boardList", JSON.stringify(boardList.reverse()));
+
+  // }
+
+  // 2단계 -- 통신을 통한 로직이라고 가정
+  function increaseViewCount(boardList, postId) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        for (let i = 0; i < boardList.length; i++) {
+          if (boardList[i].id === parseInt(postId)) {
+            boardList[i].count += 1;
+            break;
+          }
+        }
+        // 스파게티 코드 발생 유발할 수 있음
+        localStorage.setItem("boardList", JSON.stringify(boardList.reverse()));
+
+        // 작업 완료 후 resolve() 호출
+        resolve();
+        alert("조회수 증가 후 상세보기 화면으로 이동 됨");
+      }, 2000); // 2초 딜레이
+    });
+  }
+
+  // 글쓰기 버튼을 눌렀을 경우 -> 글쓰기 페이지 이동 처리
+  writeButton.onclick = function () {
+    location.href = "board-write.html";
+  };
 });
